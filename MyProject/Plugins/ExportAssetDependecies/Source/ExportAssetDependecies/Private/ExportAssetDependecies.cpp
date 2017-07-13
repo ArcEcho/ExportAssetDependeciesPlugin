@@ -89,6 +89,9 @@ void FExportAssetDependeciesModule::ShutdownModule()
 
 void FExportAssetDependeciesModule::PluginButtonClicked()
 {
+    //TODO ArcEcho
+    //Should check whether the game content is dirty.
+
     //If loading assets
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
     if (AssetRegistryModule.Get().IsLoadingAssets())
@@ -156,27 +159,34 @@ void FExportAssetDependeciesModule::GatherDependenciesInfoRecursively(FAssetRegi
     TArray<FString> &DependicesInGameContentDir,
     TArray<FString> &OtherDependices)
 {
-    TArray<FName> Dependencies;
+  TArray<FName> Dependencies;
     bool bGetDependenciesSuccess = AssetRegistryModule.Get().GetDependencies(FName(*TargetLongPackageName), Dependencies, EAssetRegistryDependencyType::Packages);
     if (bGetDependenciesSuccess)
     {
         for (auto &d : Dependencies)
         {
-            if (d.ToString().StartsWith("/Game"))
+            //Pick out packages in game content dir.
+            FString LongDependentPackageName = d.ToString();
+            if (LongDependentPackageName.StartsWith("/Game"))
             {
-                DependicesInGameContentDir.Add(d.ToString());
+                //Try find firstly to avoid duplicated entry.
+                if (DependicesInGameContentDir.Find(LongDependentPackageName) == INDEX_NONE)
+                {
+                    DependicesInGameContentDir.Add(LongDependentPackageName);
+                    GatherDependenciesInfoRecursively(AssetRegistryModule, LongDependentPackageName, DependicesInGameContentDir, OtherDependices);
+                }
             }
             else
             {
-                OtherDependices.Add(d.ToString());
+                if (OtherDependices.Find(LongDependentPackageName) == INDEX_NONE)
+                {
+                    OtherDependices.Add(LongDependentPackageName);
+                    GatherDependenciesInfoRecursively(AssetRegistryModule, LongDependentPackageName, DependicesInGameContentDir, OtherDependices);
+                }
             }
-
-            GatherDependenciesInfoRecursively(AssetRegistryModule, d.ToString(), DependicesInGameContentDir, OtherDependices);
         }
     }
 }
-
-
 
 void FExportAssetDependeciesModule::SaveDependicesInfo(const FString &ResultFileOutputPath, const TMap<FString, FDependicesInfo> &DependicesInfos)
 {
@@ -212,9 +222,11 @@ void FExportAssetDependeciesModule::SaveDependicesInfo(const FString &ResultFile
     FJsonSerializer::Serialize(RootJsonObject.ToSharedRef(), JsonWirter);
 
     FString ResultFileFilename = FPaths::Combine(ResultFileOutputPath, TEXT("AssetDependencies.json"));
-    bool bSaveSuccess = FFileHelper::SaveStringToFile(OutputString, *ResultFileFilename);
+    //Attention to FFileHelper::EEncodingOptions::ForceUTF8 here. In some case,
+    bool bSaveSuccess = FFileHelper::SaveStringToFile(OutputString, *ResultFileFilename, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
     if (bSaveSuccess)
     {
+        //UE4 API to show an editor notification.
         auto Message = LOCTEXT("ExportAssetDependeciesSuccessNotification", "Succeed to export asset dependecies.");
         FNotificationInfo Info(Message);
         Info.bFireAndForget = true;
