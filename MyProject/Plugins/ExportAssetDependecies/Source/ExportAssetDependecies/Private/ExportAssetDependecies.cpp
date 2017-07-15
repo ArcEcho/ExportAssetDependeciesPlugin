@@ -237,7 +237,7 @@ void FExportAssetDependeciesModule::SaveDependicesInfo(const FString &ResultFile
         const FString HyperLinkText = ResultFileFilename;
         Info.Hyperlink = FSimpleDelegate::CreateStatic([](FString SourceFilePath)
         {
-            FPlatformProcess::ExploreFolder(*(FPaths::GetPath(SourceFilePath)));
+            FPlatformProcess::ExploreFolder(*(FPaths::ConvertRelativePathToFull(FPaths::GetPath(SourceFilePath))));
         }, HyperLinkText);
         Info.HyperlinkText = FText::FromString(HyperLinkText);
 
