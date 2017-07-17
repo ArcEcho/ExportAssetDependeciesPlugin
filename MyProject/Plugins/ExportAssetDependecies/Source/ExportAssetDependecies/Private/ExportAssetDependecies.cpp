@@ -69,7 +69,7 @@ void FExportAssetDependeciesModule::StartupModule()
         if (SettingsModule != nullptr)
         {
             // ClassViewer Editor Settings
-            SettingsModule->RegisterSettings("Project", "Game", "Export Asset Dependencies",
+            SettingsModule->RegisterSettings("Project", "Game", "ExportAssetDependencies",
                 LOCTEXT("ExportAssetDependenciesSettingsName", "Export Asset Dependencies"),
                 LOCTEXT("ExportAssetDependenciesSettingsDescription", "Export Asset Dependencies."),
                 GetMutableDefault<UExportAssetDependeciesSettings>()
@@ -130,6 +130,20 @@ void FExportAssetDependeciesModule::ExportAssetDependecies()
         return;
     }
 
+    //TODO ArcEcho
+    //1.Check input paths validation
+    //2.Check it has valid package path.
+    if (CurrentSettings->PackagesToExport.Num() == 0)
+    {
+        ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+        if (SettingsModule != nullptr)
+        {
+            //If there is no PackagesToExport set, just to the setting viewer.
+            SettingsModule->ShowViewer("Project", "Game", "ExportAssetDependencies");
+            return;
+        }
+    }
+
     TMap<FString, FDependicesInfo> DependicesInfos;
     for (auto &PackageFilePath : CurrentSettings->PackagesToExport)
     {
@@ -144,9 +158,6 @@ void FExportAssetDependeciesModule::ExportAssetDependecies()
 
             GatherDependenciesInfoRecursively(AssetRegistryModule, TargetLongPackageName, DependicesInfoEntry.DependicesInGameContentDir, DependicesInfoEntry.OtherDependices);
         }
-
-        TArray<FName>  ACs;
-        AssetRegistryModule.Get().GetAncestorClassNames(*TargetLongPackageName, ACs);
     }
 
     //Write Results
