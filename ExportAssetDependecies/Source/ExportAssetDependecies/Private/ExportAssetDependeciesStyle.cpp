@@ -1,9 +1,8 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
-#include "ExportAssetDependeciesStyle.h"
 #include "ExportAssetDependecies.h"
-#include "Framework/Application/SlateApplication.h"
-#include "Styling/SlateStyleRegistry.h"
+
+#include "ExportAssetDependeciesStyle.h"
 #include "SlateGameResources.h"
 #include "IPluginManager.h"
 
@@ -11,24 +10,24 @@ TSharedPtr< FSlateStyleSet > FExportAssetDependeciesStyle::StyleInstance = NULL;
 
 void FExportAssetDependeciesStyle::Initialize()
 {
-	if (!StyleInstance.IsValid())
-	{
-		StyleInstance = Create();
-		FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
-	}
+    if (!StyleInstance.IsValid())
+    {
+        StyleInstance = Create();
+        FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
+    }
 }
 
 void FExportAssetDependeciesStyle::Shutdown()
 {
-	FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
-	ensure(StyleInstance.IsUnique());
-	StyleInstance.Reset();
+    FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
+    ensure(StyleInstance.IsUnique());
+    StyleInstance.Reset();
 }
 
 FName FExportAssetDependeciesStyle::GetStyleSetName()
 {
-	static FName StyleSetName(TEXT("ExportAssetDependeciesStyle"));
-	return StyleSetName;
+    static FName StyleSetName(TEXT("ExportAssetDependeciesStyle"));
+    return StyleSetName;
 }
 
 #define IMAGE_BRUSH( RelativePath, ... ) FSlateImageBrush( Style->RootToContentDir( RelativePath, TEXT(".png") ), __VA_ARGS__ )
@@ -43,12 +42,12 @@ const FVector2D Icon40x40(40.0f, 40.0f);
 
 TSharedRef< FSlateStyleSet > FExportAssetDependeciesStyle::Create()
 {
-	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("ExportAssetDependeciesStyle"));
-	Style->SetContentRoot(IPluginManager::Get().FindPlugin("ExportAssetDependecies")->GetBaseDir() / TEXT("Resources"));
+    TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("ExportAssetDependeciesStyle"));
+    Style->SetContentRoot(IPluginManager::Get().FindPlugin("ExportAssetDependecies")->GetBaseDir() / TEXT("Resources"));
 
-	Style->Set("ExportAssetDependecies.PluginAction", new IMAGE_BRUSH(TEXT("ButtonIcon_40x"), Icon40x40));
+    Style->Set("ExportAssetDependecies.PluginAction", new IMAGE_BRUSH(TEXT("ButtonIcon_40x"), Icon40x40));
 
-	return Style;
+    return Style;
 }
 
 #undef IMAGE_BRUSH
@@ -59,13 +58,13 @@ TSharedRef< FSlateStyleSet > FExportAssetDependeciesStyle::Create()
 
 void FExportAssetDependeciesStyle::ReloadTextures()
 {
-	if (FSlateApplication::IsInitialized())
-	{
-		FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
-	}
+    if (FSlateApplication::IsInitialized())
+    {
+        FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
+    }
 }
 
 const ISlateStyle& FExportAssetDependeciesStyle::Get()
 {
-	return *StyleInstance;
+    return *StyleInstance;
 }

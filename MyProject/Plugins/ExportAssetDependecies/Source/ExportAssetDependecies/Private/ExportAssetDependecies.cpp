@@ -140,6 +140,14 @@ void FExportAssetDependeciesModule::ExportAssetDependecies()
         {
             //If there is no PackagesToExport set, just to the setting viewer.
             SettingsModule->ShowViewer("Project", "Game", "ExportAssetDependencies");
+
+            //UE4 API to show an editor notification.
+            auto Message = LOCTEXT("ExportAssetDependeciesNoValidTargetPackages", "No valid target packages set.");
+            FNotificationInfo Info(Message);
+            Info.bUseSuccessFailIcons = true;
+            FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Fail);
+
+            UE_LOG(LogExportAssetDependecies, Log, TEXT("No valid target packages set."));
             return;
         }
     }
@@ -255,7 +263,7 @@ void FExportAssetDependeciesModule::SaveDependicesInfo(const FString &ResultFile
         }, HyperLinkText);
         Info.HyperlinkText = FText::FromString(HyperLinkText);
 
-        FSlateNotificationManager::Get().AddNotification(Info);
+        FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Success);
 
         UE_LOG(LogExportAssetDependecies, Log, TEXT("%s. At %s"), *Message.ToString(), *ResultFileFilename);
     }

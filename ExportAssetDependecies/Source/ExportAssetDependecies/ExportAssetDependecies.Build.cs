@@ -4,9 +4,8 @@ using UnrealBuildTool;
 
 public class ExportAssetDependecies : ModuleRules
 {
-	public ExportAssetDependecies(ReadOnlyTargetRules Target) : base(Target)
+	public ExportAssetDependecies(TargetInfo Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -44,7 +43,7 @@ public class ExportAssetDependecies : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "Json"
+                "Json",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
