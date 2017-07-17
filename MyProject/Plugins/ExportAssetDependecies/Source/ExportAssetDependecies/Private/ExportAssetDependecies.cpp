@@ -158,6 +158,9 @@ void FExportAssetDependeciesModule::ExportAssetDependecies()
 
             GatherDependenciesInfoRecursively(AssetRegistryModule, TargetLongPackageName, DependicesInfoEntry.DependicesInGameContentDir, DependicesInfoEntry.OtherDependices);
         }
+
+        TArray<FName>  ACs;
+        AssetRegistryModule.Get().GetAncestorClassNames(*TargetLongPackageName, ACs);
     }
 
     //Write Results
