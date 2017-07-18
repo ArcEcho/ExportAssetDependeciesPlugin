@@ -15,6 +15,7 @@ class EXPORTASSETDEPENDECIES_API UExportAssetDependeciesSettings : public UObjec
 
 public:
 
+    /** You can use copied asset string reference here, e.g. World'/Game/NewMap.NewMap'*/
     UPROPERTY(config, EditAnywhere, BlueprintReadWrite, Category = Default)
         TArray<FFilePath> PackagesToExport;
 };
